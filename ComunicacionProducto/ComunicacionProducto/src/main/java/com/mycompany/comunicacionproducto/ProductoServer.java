@@ -10,24 +10,45 @@ import jakarta.websocket.server.ServerEndpoint;
  */
 @ServerEndpoint("/productos")
 public class ProductoServer {
-
-    private static int contador = 0;
-
     @OnMessage
     public void onTextMessage(String message, Session session) {
+
         long start = System.nanoTime();
 
-        Producto p = Producto.fromText(message);
+        try {
 
-        long end = System.nanoTime();
-        System.out.println("---------TEXTO--------------");
+            if (esXML(message)) {
+                Producto validador = new Producto();
 
-        System.out.println("Producto recibido (texto): " + p.toString());
-        System.out.println("Peso bytes: " + message.getBytes().length);
-        System.out.println("Tiempo procesamiento: " + (end - start) + " ns");
-        contador++;
-        System.out.println("Recibido #" + contador);
-        System.out.println("-----------------------");
+                boolean esValido = validador.validarXML(message);
+
+                Producto p = Producto.fromXML(message);
+
+                long end = System.nanoTime();
+                System.out.println("------------XML-----------");
+                if (esValido) {
+                    System.out.println("El XML cumple con XSD");
+                    System.out.println("Producto recibido (XML): " + p);
+                    System.out.println("Peso bytes: " + message.getBytes().length);
+                    System.out.println("Tiempo procesamiento: " + (end - start) + " ns");
+                } else {
+                    System.out.println("El XML no cumple con XSD");
+                }
+
+            } else {
+                Producto p = Producto.fromText(message);
+
+                long end = System.nanoTime();
+                System.out.println("---------TEXTO--------------");
+                System.out.println("Producto recibido (texto): " + p);
+                System.out.println("Peso bytes: " + message.getBytes().length);
+                System.out.println("Tiempo procesamiento: " + (end - start) + " ns");
+            }
+            System.out.println("-----------------------");
+
+        } catch (Exception e) {
+            System.out.println("Error procesando mensaje: " + e.getMessage());
+        }
     }
 
     @OnMessage
@@ -43,4 +64,9 @@ public class ProductoServer {
         System.out.println("Peso bytes: " + data.length);
         System.out.println("Tiempo procesamiento: " + (end - start) + " ns");
     }
+
+    private boolean esXML(String message) {
+        return message.trim().startsWith("<");
+    }
+
 }

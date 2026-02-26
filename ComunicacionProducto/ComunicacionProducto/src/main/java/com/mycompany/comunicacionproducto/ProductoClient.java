@@ -35,4 +35,9 @@ public class ProductoClient {
             java.nio.ByteBuffer.wrap(data)
         );
     }
+
+    public void sendXML(Producto p) throws Exception {
+        String xmlData = p.toXML();
+        session.getAsyncRemote().sendText(xmlData);
+    }
 }

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.comunicacionproducto;
 
 import com.mycompany.comunicacionproducto.Models.Producto;
@@ -20,8 +16,7 @@ public class MainClient {
     /*
         Clase MainClient donde se pone productClient como el endpoint y se conecta al servidor localhost 
         para poder hacer la peticion de los productos y poder hacer la serializacion de el objeto en texto y binario.
-    */
-
+     */
     public static void main(String[] args) throws Exception {
 
         WebSocketContainer container
@@ -34,6 +29,7 @@ public class MainClient {
                 client,
                 new URI("ws://localhost:8025/productos")
         );
+
         //Creacion del objeto producto
         Producto p = new Producto(
                 "ABC123",
@@ -44,15 +40,16 @@ public class MainClient {
                 LocalDate.now()
         );
         // esperamos la conexion...
-        Thread.sleep(1000); 
-        int N = 3;
-        int M = 3;
-        for (int i = 0; i < N; i++) {
-            client.sendText(p);
+        Thread.sleep(1000);
+
+        client.sendText(p);
+        Thread.sleep(1000); // esperamos el envio del texto antes de enviar el binario
+        client.sendBinary(p);
+        Thread.sleep(1000);
+        for (int i = 0; i < 3; i++) {
+            client.sendXML(p);
         }
-        for (int i = 0; i < M; i++) {
-            client.sendBinary(p);
-        }
+
         // esperaremos el envio antes de cerrar la conexion 
         Thread.sleep(2000);
     }
