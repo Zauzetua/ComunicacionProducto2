@@ -1,6 +1,8 @@
 package com.mycompany.comunicacionproducto;
 
 import com.mycompany.comunicacionproducto.Models.Producto;
+import com.mycompany.comunicacionproducto.proto.ProductoProto;
+
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 
@@ -10,6 +12,7 @@ import jakarta.websocket.server.ServerEndpoint;
  */
 @ServerEndpoint("/productos")
 public class ProductoServer {
+
     @OnMessage
     public void onTextMessage(String message, Session session) {
 
@@ -53,20 +56,60 @@ public class ProductoServer {
 
     @OnMessage
     public void onBinaryMessage(byte[] data, Session session) {
+
+        if (data.length == 86) {
+            procesarBinarioFijo(data);
+        } else {
+            procesarProtobuf(data);
+        }
+    }
+
+    private void procesarBinarioFijo(byte[] data) {
+
         long start = System.nanoTime();
 
         Producto p = Producto.fromBinary(data);
 
         long end = System.nanoTime();
 
-        System.out.println("------------BINARIO-----------");
-        System.out.println("Producto recibido (binario): " + p.toString());
+        System.out.println("------------BINARIO FIJO-----------");
+        System.out.println("Producto recibido: " + p);
         System.out.println("Peso bytes: " + data.length);
         System.out.println("Tiempo procesamiento: " + (end - start) + " ns");
     }
 
     private boolean esXML(String message) {
         return message.trim().startsWith("<");
+    }
+
+    private void procesarProtobuf(byte[] data) {
+
+        try {
+
+            long start = System.nanoTime();
+
+            ProductoProto.Producto proto
+                    = ProductoProto.Producto.parseFrom(data);
+
+            long end = System.nanoTime();
+
+            System.out.println("------------PROTOBUF-----------");
+
+            System.out.println("Producto recibido: " +
+                    proto.getClave() + "|"
+                    + proto.getNombre() + "|"
+                    + proto.getPrecio() + "|"
+                    + proto.getCantidad() + "|"
+                    + proto.getMarca() + "|"
+                    + proto.getFechaReg()
+            );
+
+            System.out.println("Peso bytes: " + data.length);
+            System.out.println("Tiempo procesamiento: " + (end - start) + " ns");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

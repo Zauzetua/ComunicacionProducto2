@@ -1,5 +1,6 @@
-com\mycompany\comunicacionproducto\Models\Producto.class
 com\mycompany\comunicacionproducto\ProductoServer.class
 com\mycompany\comunicacionproducto\MainServer.class
 com\mycompany\comunicacionproducto\ProductoClient.class
+com\mycompany\comunicacionproducto\Models\Producto.class
+com\mycompany\comunicacionproducto\LocalDateAdapter.class
 com\mycompany\comunicacionproducto\MainClient.class

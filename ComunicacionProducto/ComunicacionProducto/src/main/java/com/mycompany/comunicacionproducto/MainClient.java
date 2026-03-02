@@ -14,43 +14,42 @@ import java.time.LocalDate;
 public class MainClient {
 
     /*
-        Clase MainClient donde se pone productClient como el endpoint y se conecta al servidor localhost 
-        para poder hacer la peticion de los productos y poder hacer la serializacion de el objeto en texto y binario.
+     * Clase MainClient donde se pone productClient como el endpoint y se conecta al
+     * servidor localhost
+     * para poder hacer la peticion de los productos y poder hacer la serializacion
+     * de el objeto en texto y binario. Tambien se hace la serializacion a XML y Protobuf
      */
     public static void main(String[] args) throws Exception {
 
-        WebSocketContainer container
-                = ContainerProvider.getWebSocketContainer();
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
         ProductoClient client = new ProductoClient();
 
-        //endpoint del servidor al que nos conectaremos
+        // endpoint del servidor al que nos conectaremos
         container.connectToServer(
                 client,
-                new URI("ws://localhost:8025/productos")
-        );
+                new URI("ws://localhost:8025/productos"));
 
-        //Creacion del objeto producto
+        // Creacion del objeto producto
         Producto p = new Producto(
                 "ABC123",
                 "SuperLaptopGamingProMax2026",
                 25000.50,
                 10,
                 "LenovoCorporationInternational",
-                LocalDate.now()
-        );
+                LocalDate.now());
         // esperamos la conexion...
         Thread.sleep(1000);
 
         client.sendText(p);
-        Thread.sleep(1000); // esperamos el envio del texto antes de enviar el binario
+        Thread.sleep(1000); 
         client.sendBinary(p);
         Thread.sleep(1000);
-        for (int i = 0; i < 3; i++) {
-            client.sendXML(p);
-        }
+        client.sendXML(p);
+        Thread.sleep(1000);
+        client.sendProtobuf(p);
 
-        // esperaremos el envio antes de cerrar la conexion 
+        // esperaremos el envio antes de cerrar la conexion
         Thread.sleep(2000);
     }
 }

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package producto;
+
+option java_package = "com.mycompany.comunicacionproducto.proto";
+option java_outer_classname = "ProductoProto";
+
+message Producto {
+  string clave = 1;
+  string nombre = 2;
+  double precio = 3;
+  int32 cantidad = 4;
+  string marca = 5;
+  string fechaReg = 6; // ISO-8601 (yyyy-MM-dd), en proto no hay date
+}
